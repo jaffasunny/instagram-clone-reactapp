@@ -13,6 +13,12 @@ function App() {
 				/>
 			</div>
 			<h1>HELLO JAFFA HERE Let's build instagram clone with react!</h1>
+			<Post
+				username="jaffaisreal"
+				caption="WOW it works"
+				imageUrl="https://reactjs.org/logo-og.png"
+			/>
+			<Post />
 			<Post />
 
 			{/* POSTS */}
