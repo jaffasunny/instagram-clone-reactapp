@@ -5,6 +5,7 @@ import "./App.css";
 import ImageUpload from "./components/ImageUpload";
 import Post from "./components/Post";
 import { auth, db } from "./firebase";
+// import InstagramEmbed from "react-instagram-embed";
 
 function App() {
 	const [posts, setPosts] = useState([]);
@@ -163,28 +164,45 @@ function App() {
 					src="https://www.instagram.com/static/images/web/mobile_nav_type_logo.png/735145cfe0a4.png"
 					alt="Instagram Logo"
 				/>
+				{user ? (
+					<Button onClick={() => auth.signOut()}>Logout</Button>
+				) : (
+					<div className="app__loginContainer">
+						<Button onClick={() => setOpenSignIn(true)}>Sign In</Button>
+						<Button onClick={() => setOpen(true)}>Sign Up</Button>
+					</div>
+				)}
 			</div>
 
 			<h1>HELLO JAFFA HERE Let's build instagram clone with react!</h1>
-			{user ? (
-				<Button onClick={() => auth.signOut()}>Logout</Button>
-			) : (
-				<div className="app__loginContainer">
-					<Button onClick={() => setOpenSignIn(true)}>Sign In</Button>
-					<Button onClick={() => setOpen(true)}>Sign Up</Button>
-				</div>
-			)}
 
-			{posts.map(({ id, post }) => {
-				return (
-					<Post
-						key={id}
-						username={post.username}
-						caption={post.caption}
-						imageUrl={post.imageUrl}
-					/>
-				);
-			})}
+			<div className="app__posts">
+				{posts.map(({ id, post }) => {
+					return (
+						<Post
+							key={id}
+							postId={id}
+							username={post.username}
+							caption={post.caption}
+							imageUrl={post.imageUrl}
+						/>
+					);
+				})}
+			</div>
+
+			{/* <InstagramEmbed
+				url="https://instagr.am/p/Zw9o4/"
+				clientAccessToken="123|456"
+				maxWidth={320}
+				hideCaption={false}
+				containerTagName="div"
+				protocol=""
+				injectScript
+				onLoading={() => {}}
+				onSuccess={() => {}}
+				onAfterRender={() => {}}
+				onFailure={() => {}}
+			/> */}
 
 			{/* user ending with ? means if user is not present then don't break */}
 			{user?.displayName ? (
