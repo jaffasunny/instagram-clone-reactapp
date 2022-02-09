@@ -1,20 +1,111 @@
+import { Button, Input, Modal, Typography } from "@mui/material";
+import { Box } from "@mui/system";
 import { useState, useEffect } from "react";
 import "./App.css";
 import Post from "./components/Post";
-import { db } from "./firebase";
+import { auth, db } from "./firebase";
+
 function App() {
 	const [posts, setPosts] = useState([]);
+	const [open, setOpen] = useState(false);
+	const [email, setEmail] = useState("");
+	const [password, setPassword] = useState("");
+	const [username, setUsername] = useState("");
+	const [user, setUser] = useState(null);
+
+	// FrontEnd Listener
+	useEffect(() => {
+		// BackEnd Listener
+		const unsubscribe = auth.onAuthStateChanged((authUser) => {
+			if (authUser) {
+				// User has logged in
+				console.log(authUser);
+				setUser(authUser);
+			} else {
+				// user has logged out
+				setUser(null);
+			}
+		});
+		return () => {
+			// perform some cleanup function
+			unsubscribe();
+		};
+	}, [user, username]);
 
 	useEffect(() => {
 		db.collection("posts").onSnapshot((snapshot) => {
-			setPosts(snapshot.docs.map((doc) => doc.data()));
+			setPosts(snapshot.docs.map((doc) => ({ id: doc.id, post: doc.data() })));
 		});
 	}, []);
 
+	const style = {
+		position: "absolute",
+		top: "50%",
+		left: "50%",
+		transform: "translate(-50%, -50%)",
+		width: 400,
+		bgcolor: "#fff",
+		border: "2px solid #000",
+		boxShadow: 24,
+		p: 4,
+	};
+
+	const signUp = (e) => {
+		e.preventDefault();
+
+		auth
+			.createUserWithEmailAndPassword(email, password)
+			.catch((err) => alert(err.message))
+			.then((authUser) => {
+				return authUser.user.updateProfile({
+					displayName: username,
+				});
+			});
+	};
+
 	return (
 		<div className="app">
-			{console.log(db)}
 			{/* BEM CSS Convention using ***___*** */}
+
+			<div>
+				<Modal
+					open={open}
+					onClose={() => setOpen(false)}
+					aria-labelledby="modal-modal-title"
+					aria-describedby="modal-modal-description">
+					<Box sx={style}>
+						<form className="app__signup">
+							<img
+								className="app__headerImage"
+								src="https://www.instagram.com/static/images/web/mobile_nav_type_logo.png/735145cfe0a4.png"
+								alt="Instagram Logo"
+							/>
+							<center>
+								<Input
+									placeholder="username"
+									type="text"
+									value={username}
+									onChange={(e) => setUsername(e.target.value)}
+								/>
+								<Input
+									placeholder="email"
+									type="text"
+									value={email}
+									onChange={(e) => setEmail(e.target.value)}
+								/>
+								<Input
+									placeholder="password"
+									type="password"
+									value={password}
+									onChange={(e) => setPassword(e.target.value)}
+								/>
+								<Button onClick={signUp}>Sign Up</Button>
+							</center>
+						</form>
+					</Box>
+				</Modal>
+			</div>
+
 			<div className="app__header">
 				<img
 					className="app__headerImage"
@@ -24,10 +115,16 @@ function App() {
 			</div>
 
 			<h1>HELLO JAFFA HERE Let's build instagram clone with react!</h1>
+			{user ? (
+				<Button onClick={() => auth.signOut()}>Logout</Button>
+			) : (
+				<Button onClick={() => setOpen(true)}>Signup</Button>
+			)}
 
-			{posts.map((post) => {
+			{posts.map(({ id, post }) => {
 				return (
 					<Post
+						key={id}
 						username={post.username}
 						caption={post.caption}
 						imageUrl={post.imageUrl}
