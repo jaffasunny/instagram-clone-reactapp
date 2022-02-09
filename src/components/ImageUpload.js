@@ -2,6 +2,7 @@ import { Button } from "@mui/material";
 import React, { useState } from "react";
 import { storage, db } from "../firebase";
 import firebase from "firebase";
+import "./imageUpload.css";
 
 function ImageUpload({ username }) {
 	const [caption, setCaption] = useState("");
@@ -58,11 +59,7 @@ function ImageUpload({ username }) {
 	};
 
 	return (
-		<div>
-			{/* I want to have */}
-			{/* Caption Input */}
-			{/* File picker */}
-			{/* Post button */}
+		<div className="imageUpload">
 			<progress value={progress} max="100" />
 			<input
 				type="text"

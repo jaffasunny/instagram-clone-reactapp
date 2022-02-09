@@ -83,13 +83,6 @@ function App() {
 		<div className="app">
 			{/* BEM CSS Convention using ***___*** */}
 
-			{/* user ending with ? means if user is not present then don't break */}
-			{user?.displayName ? (
-				<ImageUpload username={user.displayName} />
-			) : (
-				<h3>Sorry you need to login to upload</h3>
-			)}
-
 			<div>
 				<Modal
 					open={open}
@@ -192,11 +185,13 @@ function App() {
 					/>
 				);
 			})}
-			{/* <Post
-				username="jaffaisreal"
-				caption="WOW it works"
-				imageUrl="https://reactjs.org/logo-og.png"
-			/> */}
+
+			{/* user ending with ? means if user is not present then don't break */}
+			{user?.displayName ? (
+				<ImageUpload username={user.displayName} />
+			) : (
+				<h3>Sorry you need to login to upload</h3>
+			)}
 		</div>
 	);
 }
