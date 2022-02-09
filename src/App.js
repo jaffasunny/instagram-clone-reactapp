@@ -2,6 +2,7 @@ import { Button, Input, Modal } from "@mui/material";
 import { Box } from "@mui/system";
 import { useState, useEffect } from "react";
 import "./App.css";
+import ImageUpload from "./components/ImageUpload";
 import Post from "./components/Post";
 import { auth, db } from "./firebase";
 
@@ -34,9 +35,13 @@ function App() {
 	}, [user, username]);
 
 	useEffect(() => {
-		db.collection("posts").onSnapshot((snapshot) => {
-			setPosts(snapshot.docs.map((doc) => ({ id: doc.id, post: doc.data() })));
-		});
+		db.collection("posts")
+			.orderBy("timestamp", "desc")
+			.onSnapshot((snapshot) => {
+				setPosts(
+					snapshot.docs.map((doc) => ({ id: doc.id, post: doc.data() }))
+				);
+			});
 	}, []);
 
 	const style = {
@@ -78,6 +83,13 @@ function App() {
 		<div className="app">
 			{/* BEM CSS Convention using ***___*** */}
 
+			{/* user ending with ? means if user is not present then don't break */}
+			{user?.displayName ? (
+				<ImageUpload username={user.displayName} />
+			) : (
+				<h3>Sorry you need to login to upload</h3>
+			)}
+
 			<div>
 				<Modal
 					open={open}
@@ -110,7 +122,9 @@ function App() {
 									value={password}
 									onChange={(e) => setPassword(e.target.value)}
 								/>
-								<Button onClick={signUp}>Sign Up</Button>
+								<Button type="submit" onClick={signUp}>
+									Sign Up
+								</Button>
 							</center>
 						</form>
 					</Box>
@@ -141,7 +155,9 @@ function App() {
 									value={password}
 									onChange={(e) => setPassword(e.target.value)}
 								/>
-								<Button onClick={signIn}>Sign In</Button>
+								<Button type="submit" onClick={signIn}>
+									Sign In
+								</Button>
 							</center>
 						</form>
 					</Box>
